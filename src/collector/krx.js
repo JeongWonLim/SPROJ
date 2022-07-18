@@ -1,9 +1,25 @@
 'use strict';
 
 const axios = require('axios');
-let requestObj = {};
+const req = function(){
+    this.headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
+        'X-Requested-With': 'XMLHttpRequest',
+    };    
+    this.url = '';
+}
 
-var req = exports = module.exports = {};
+req.prototype.post = async function post(url, params){
+    return await axios({
+        'method' : 'post',
+        'url' : url,
+        'headers' : this.headers,
+        'params' : params,
+    })
+}
+
+exports = module.exports = {};
+
 
 req.ohlcvRequest = async function (stkcode, startDay, endday){
     return await axios(
@@ -12,8 +28,7 @@ req.ohlcvRequest = async function (stkcode, startDay, endday){
             url : '/bldAttendant/getJsonData.cmd',
             baseURL : 'http://data.krx.co.kr/comm',
             headers :{
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-                'X-Requested-With': 'XMLHttpRequest',
+                
             },
             params : {
                 bld: 'dbms/MDC/STAT/standard/MDCSTAT01701',
@@ -35,8 +50,7 @@ req.individuellTradingPerpormenceRequest = async function (stkcode, startDay, en
             url : '/bldAttendant/getJsonData.cmd',
             baseURL : 'http://data.krx.co.kr/comm',
             headers :{
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-                'X-Requested-With': 'XMLHttpRequest',
+                
             },
             params : {
                 bld: 'dbms/MDC/STAT/standard/MDCSTAT02301',
