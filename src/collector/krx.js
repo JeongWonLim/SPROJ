@@ -1,27 +1,11 @@
 'use strict';
 
 const axios = require('axios');
-const req = function(){
-    this.headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
-        'X-Requested-With': 'XMLHttpRequest',
-    };    
-    this.url = '';
-}
 
-req.prototype.post = async function post(url, params){
-    return await axios({
-        'method' : 'post',
-        'url' : url,
-        'headers' : this.headers,
-        'params' : params,
-    })
-}
+var krx = {}
+var naver= {};
 
-exports = module.exports = {};
-
-
-req.ohlcvRequest = async function (stkcode, startDay, endday){
+krx.ohlcvRequest = async function (){
     return await axios(
         {
             method : 'post',
@@ -43,7 +27,7 @@ req.ohlcvRequest = async function (stkcode, startDay, endday){
     )
 }
 
-req.individuellTradingPerpormenceRequest = async function (stkcode, startDay, endday){
+krx.individuellTradingPerpormenceRequest = async function (stkcode, startDay, endday){
     return await axios(
         {
             method : 'post',
@@ -58,12 +42,50 @@ req.individuellTradingPerpormenceRequest = async function (stkcode, startDay, en
                 strtDd: '20220715',
                 endDd: '20220715',
             },
+            
+        }
+    )
+}
+
+naver.dataParser = function(data){
+    var toJSON = []
+    for(var i = 1; i < data.length; i++){
+        toJSON.push({
+            'day' : data[i][0],
+            'open_price' : data[i][1],
+            'high_price' : data[i][2],
+            'low_price' : data[i][3],
+            'close_price' : data[i][4],
+            'volume' : data[i][5],
+        })
+    }
+
+    return toJSON
+}
+
+naver.ohlcvRequest = async function (){
+    return await axios(
+        {
+            method : 'post',
+            url : 'https://api.finance.naver.com/siseJson.naver?symbol=KOSPI&requestType=1&startTime=20180303&endTime=20200511&timeframe=day',
+            headers :{
+                
+            },
+            params : {
+                'symbol': 'KOSPI',
+                'requestType': '1',
+                'startTime': '20180303',
+                'endTime': '20200511',
+                'timeframe': 'day',
+            },
             transformResponse : function(data){
-                return JSON.parse(data).output;
+                return naver.dataParser(eval(data));
             }
         }
     )
 }
 
 
-req.individuellTradingPerpormenceRequest(1,2,3).then(data=>console.log(data.data))
+exports = module.exports = krx;
+
+naver.ohlcvRequest()
